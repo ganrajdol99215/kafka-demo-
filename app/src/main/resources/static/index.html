@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kafka Real-Time Demo</title>
+
+    <!-- STOMP + SockJS (required for Spring WebSocket) -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+        button {
+            padding: 10px 16px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        ul {
+            margin-top: 20px;
+        }
+        li {
+            padding: 6px 0;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Kafka Real-Time Event Demo</h2>
+
+<button onclick="triggerEvent()">Trigger Kafka Event</button>
+
+<h3>Events Received (Real Time)</h3>
+<ul id="events"></ul>
+
+<script>
+    // Connect to Spring Boot WebSocket
+    const socket = new SockJS('/ws');
+    const stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, function () {
+        console.log("Connected to WebSocket");
+
+        // Subscribe to Kafka-processed events
+        stompClient.subscribe('/topic/events', function (message) {
+            const li = document.createElement('li');
+            li.innerText = message.body;
+            document.getElementById('events').appendChild(li);
+        });
+    });
+
+    // Call REST API → Kafka Producer
+    function triggerEvent() {
+        fetch('/trigger', { method: 'POST' });
+    }
+</script>
+
+</body>
+</html>
