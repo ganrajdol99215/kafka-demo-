@@ -1,8 +1,7 @@
-cat > docker-compose.yml << 'EOF'
+cat <<EOF > docker-compose.yml
 version: "3.8"
 
 services:
-
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
     container_name: zookeeper
